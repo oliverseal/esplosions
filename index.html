@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Esplosions Test</title>
+    <style>
+      body {
+        background: #f1f1f1;
+        font-family: Open Sans, Verdana, Arial, sans-serif;
+      }
+      #esplosions-test {
+        position: relative;
+        z-index: 1;
+      }
+      #controls {
+        z-index: 2;
+        position: absolute;
+        width: 200px;
+        height: 350px;
+        border-radius: 16px;
+        background: #666699;
+        color: #ffffff;
+        box-sizing: border-box;
+        padding: 20px;
+        top: 10px; right: 10px;
+      }
+      
+      #controls input,
+      #controls select {
+        width: 100%;
+      }
+      
+    </style>
+    <script src="js/easypeasy.js"></script>
+    <script src="js/esplosions.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(e) {
+        var tester = document.getElementById('esplosions-test');
+        tester.width = document.body.clientWidth
+        tester.height = document.body.clientHeight
+        var sploder = new esplosions.GroundZero(tester);
+        tester.addEventListener('click', function(e) {
+          var reportSelector = document.getElementById('report-selector');
+          var reportColor = document.getElementById('report-color');
+          var options = document.querySelectorAll('#report-selector option');
+          var selectedReportOption = options[reportSelector.selectedIndex];
+          var selectedReport = 'Spark1';
+          
+          var color = reportColor.value || '#ff6666';
+          var report;
+          if (selectedReportOption) {
+            selectedReport = selectedReportOption.value;
+          }
+          switch(selectedReport) {
+            case 'Spark2':
+              report = new esplosions.Spark2(
+                {x:e.clientX, y:e.clientY}, 
+                {
+                  color: color, 
+                  size: Math.random()*150 + 25, 
+                  rotationOffset: Math.random()*M_TAU,
+                  thickness: Math.random()*2+2,
+                  duration: 45
+                }
+              );
+              break;
+            case 'Spark1':
+            default:
+              report = new esplosions.Spark1(
+                {x:e.clientX, y:e.clientY}, 
+                {
+                  color: color, 
+                  size: Math.random()*150 + 25, 
+                  rotationOffset: Math.random()*M_TAU,
+                  thickness: Math.random()*2+2,
+                  duration: 45
+                }
+              );
+          }
+          
+          sploder.addReport(report);
+        });
+      });
+      
+      
+    </script>
+  </head>
+  <body>
+    <canvas id="esplosions-test" width="1280" height="640"></canvas>
+    <div id="controls">
+      <div class="instructions">Click anywhere.</div>
+      <input id="report-color" type="color" value="#ff6666"><br>
+      <select id="report-selector">
+        <option value="Spark1">Spark 1</option>
+        <option value="Spark2">Spark 2</option>
+      </select>
+    </div>
+  </body>
+</html>
