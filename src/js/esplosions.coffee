@@ -24,6 +24,8 @@ class esplosions.GroundZero
     
     for id, report of @reports
       report.draw(@ctx)
+      
+    
     
     
 

@@ -29,6 +29,10 @@ html
         width: 100%;
       }
 
+    script(src='//cdnjs.cloudflare.com/ajax/libs/Base64/0.2.0/base64.min.js')
+    script(src="js/jsgif/LZWEncoder.js")
+    script(src="js/jsgif/NeuQuant.js")
+    script(src="js/jsgif/GIFEncoder.js")
     script(src='js/easypeasy.js')
     script(src='js/esplosions.js')
     script.
@@ -36,11 +40,34 @@ html
         var tester = document.getElementById('esplosions-test');
         tester.width = document.body.clientWidth
         tester.height = document.body.clientHeight
+        var testerContext = tester.getContext('2d')
         var sploder = new esplosions.GroundZero(tester);
+        var encoder = new GIFEncoder();
+        encoder.setRepeat(0);
+        encoder.setDelay(32);
+        encoder.setSize(320, 320);
+        var encoderFrame = 0;
+        
+        function encodeFrame() {
+          encoder.addFrame(testerContext)
+          encoderFrame++;
+          if (encoderFrame < 75) {
+            requestAnimationFrame(encodeFrame);
+          } else {
+            encoderFrame = 0;
+            encoder.finish();
+            var binaryGif = encoder.stream().getData();
+            var dataUrl = 'data:image/gif;base64,' + btoa(binaryGif);
+            console.log(dataUrl);
+            document.getElementById('gif-link').href = dataUrl;
+          }
+        }
+        
         tester.addEventListener('click', function(e) {
           var reportSelector = document.getElementById('report-selector');
           var reportColor = document.getElementById('report-color');
           var options = document.querySelectorAll('#report-selector option');
+          var generateGif = document.getElementById('generate-gif').checked;
           var selectedReportOption = options[reportSelector.selectedIndex];
           var selectedReport = 'Spark1';
           
@@ -77,6 +104,10 @@ html
           }
           
           sploder.addReport(report);
+          if (generateGif) {
+            encoder.start();
+            encodeFrame();
+          }
         });
       });
 
@@ -92,4 +123,9 @@ html
       select#report-selector
         option(value='Spark1') Spark 1
         option(value='Spark2') Spark 2
+        
+      label Generate GIF
+      input#generate-gif(type='checkbox')
+      
+      a#gif-link(href='#') GIF
 
